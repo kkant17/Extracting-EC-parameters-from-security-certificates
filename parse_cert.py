@@ -1,46 +1,45 @@
 from cryptography import x509
-from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec
-from curves import get_curve_params
-import binascii
+
+from curves import CURVE_PARAMS
+
 
 def load_certificate(path):
     with open(path, "rb") as f:
         data = f.read()
-    try:
-        return x509.load_pem_x509_certificate(data, default_backend())
-    except ValueError:
-        return x509.load_der_x509_certificate(data, default_backend())
 
-def extract_ec_info(cert):
+    try:
+        return x509.load_pem_x509_certificate(data)
+    except ValueError:
+        return x509.load_der_x509_certificate(data)
+
+
+def extract_curve_info(cert):
     pubkey = cert.public_key()
 
     if not isinstance(pubkey, ec.EllipticCurvePublicKey):
-        raise ValueError("Certificate does not use EC keys")
+        raise ValueError("Certificate does not use EC keys (ECDSA).")
 
     curve = pubkey.curve
-    numbers = pubkey.public_numbers()
+    curve_name = curve.name
+    print("Curve Used:", curve_name)
 
-    print(f"Curve Name: {curve.name}")
-    print(f"Public Key Point (Q):")
-    print(f"  x = {hex(numbers.x)}")
-    print(f"  y = {hex(numbers.y)}")
+    if curve_name not in CURVE_PARAMS:
+        raise ValueError(f"Curve parameters not defined for {curve_name}")
 
-    # Get full curve parameters
-    params = get_curve_params(curve.name)
+    params = CURVE_PARAMS[curve_name]
 
-    if params:
-        print("\n--- Elliptic Curve Parameters ---")
-        print(f"Field characteristic p:\n  {hex(params['p'])}")
-        print(f"Curve equation: y^2 = x^3 + {params['a']}x + {params['b']} (mod p)")
-        print(f"Generator G:")
-        print(f"  Gx = {hex(params['Gx'])}")
-        print(f"  Gy = {hex(params['Gy'])}")
-        print(f"Order n:\n  {hex(params['n'])}")
-        print(f"Cofactor h: {params['h']}")
-    else:
-        print("\nCurve parameters not found for this curve.")
+    p = params["p"]
+    a = params["a"]
+    b = params["b"]
+
+    print("\n--- Field Characteristic ---")
+    print(f"p = {hex(p)}")
+
+    print("\n--- Curve Equation ---")
+    print(f"y² = x³ + ({a})x + ({hex(b)})  mod p")
+
 
 if __name__ == "__main__":
-    cert = load_certificate("certificate.crt")  # <-- rename to your file
-    extract_ec_info(cert)
+    cert = load_certificate("certificate.crt")  # change filename as needed
+    extract_curve_info(cert)
