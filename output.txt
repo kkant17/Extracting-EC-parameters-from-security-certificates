@@ -1,15 +1,7 @@
-Curve Name: secp256r1
-Public Key Point (Q):
-  x = 0x7ec2730cacc0243164ad0d08634351fef839294af0d80da4ee44914470ac4c09
-  y = 0x4c668b29156850ffcb77283d9ddf71d69d900ff4c8c2246abb456415668d1cd0
+Curve Used: secp256r1
 
---- Elliptic Curve Parameters ---
-Field characteristic p:
-  0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff
-Curve equation: y^2 = x^3 + -3x + 41058363725152142129326129780047268409114441015993725554835256314039467401291 (mod p)
-Generator G:
-  Gx = 0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296
-  Gy = 0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5
-Order n:
-  0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551
-Cofactor h: 1
+--- Field Characteristic ---
+p = 0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff
+
+--- Curve Equation ---
+y**2 = x**3 + (-3)x + (0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b)  mod p
