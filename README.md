@@ -1,37 +1,82 @@
-# README
+# Programming Assignment 2 — Extracting EC Curve Parameters from a TLS Certificate
 
-## Overview
-This project extracts elliptic-curve parameters from a website’s TLS certificate. Modern websites using ECDSA include an EC public key and an OID (Object Identifier) that specifies which standard curve is used. The program reads the certificate, identifies the curve, and prints the curve equation, field characteristic, generator point, order, and public key.
+This project extracts the **elliptic curve equation** and the **field characteristic** used in a website's TLS certificate. Modern websites that use ECDSA specify their elliptic curve using an **OID** inside the certificate. The certificate does **not** include the curve parameters themselves, so the parameters must be taken from the official NIST/SECG standards.
 
-## Usage
-1. Export the website certificate in Base‑64 (.cer/.crt) format.
-2. Install dependencies:
-```
+The program performs:
+
+1. Loading the exported TLS certificate  
+2. Extracting the elliptic-curve OID  
+3. Identifying the NIST curve (`prime256v1`, `secp256r1`, etc.)  
+4. Printing:
+   - Field characteristic **p**
+   - Curve equation:  
+     \[
+       y^2 = x^3 + ax + b \mod p
+     \]
+
+Only these two items are required for the assignment.
+
+---
+
+## Exporting the Certificate
+
+**Chrome / Edge**
+
+1. Open the website  
+2. Click the lock icon → *Connection is secure* → *Certificate is valid*  
+3. Open **Details** tab  
+4. Click **Export…**  
+5. Choose **Base‑64 encoded (.cer)**  
+6. Save as `certificate.crt`
+
+---
+
+## Running the Program
+
+Install dependency:
+
+```bash
 pip install cryptography
 ```
-3. Run:
-```
+
+Run:
+
+```bash
 python parse_cert.py
 ```
 
-## Files
+The script expects a file named **certificate.crt**.
+
+---
+
+##  File Overview
+
 ### `parse_cert.py`
-Loads the certificate, extracts the EC public key, detects the curve from its OID, and prints parameters.
+- Loads and parses the certificate  
+- Extracts the elliptic-curve name  
+- Prints:
+  - Field characteristic **p**
+  - Curve equation parameters **a**, **b**
 
 ### `curves.py`
-Defines parameters for common NIST curves: P‑256 (prime256v1 / secp256r1), P‑384, P‑521.
+Contains official NIST parameters for:
+- `secp256r1` / `prime256v1` (P‑256)  
+- `secp384r1` (P‑384)  
+- `secp521r1` (P‑521)
 
-## Notes
-- `prime256v1` and `secp256r1` are two names for the same curve.
-- Only EC certificates are supported.
-- OIDs uniquely identify curves (e.g., P‑256 → 1.2.840.10045.3.1.7).
+These are required because X.509 certificates **do not contain EC parameters**, only the curve OID (per RFC 5480).
 
-## Output Example
+---
+
+## Example Output
+
 ```
-Curve Name: secp256r1
-Public Key Point (Q): x, y
-Field characteristic p: …
-Equation: y² = x³ − 3x + b mod p
-Generator G: Gx, Gy
-Order n, Cofactor h
+Curve Used: secp256r1
+
+--- Field Characteristic ---
+p = 0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff
+
+--- Curve Equation ---
+y² = x³ + (-3)x + (0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b) mod p
 ```
+
