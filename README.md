@@ -1,4 +1,4 @@
-# Programming Assignment 2 — Extracting EC Curve Parameters from a TLS Certificate
+# Extracting EC Curve Parameters from a TLS Certificate
 
 This project extracts the **elliptic curve equation** and the **field characteristic** used in a website's TLS certificate. Modern websites that use ECDSA specify their elliptic curve using an **OID** inside the certificate. The certificate does **not** include the curve parameters themselves, so the parameters must be taken from the official NIST/SECG standards.
 
